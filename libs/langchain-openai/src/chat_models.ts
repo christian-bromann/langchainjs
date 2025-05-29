@@ -76,6 +76,8 @@ import type {
   ResponseFormatJSONObject,
   ResponseFormatJSONSchema,
 } from "openai/resources/shared";
+import { isLangChainTool } from "@langchain/core/utils/function_calling";
+import { isZodSchema } from "@langchain/core/utils/types";
 import {
   type OpenAICallOptions,
   type OpenAIChatInput,
@@ -996,6 +998,11 @@ function _convertChatOpenAIToolTypeToOpenAITool(
   }
 ): OpenAIClient.ChatCompletionTool {
   if (isOpenAITool(tool)) {
+    // If the tool already has a strict property set, respect it instead of overriding
+    if ("strict" in tool.function && tool.function.strict !== undefined) {
+      return tool;
+    }
+
     if (fields?.strict !== undefined) {
       return {
         ...tool,
@@ -1008,6 +1015,29 @@ function _convertChatOpenAIToolTypeToOpenAITool(
 
     return tool;
   }
+
+  // Check if the tool has a JSON schema instead of Zod schema
+  const hasJsonSchemaType =
+    "schema" in tool &&
+    !isZodSchema(tool.schema) &&
+    typeof tool.schema === "object" &&
+    tool.schema !== null;
+
+  // Handle MCP tools that use JSON schemas instead of Zod schemas
+  if (isLangChainTool(tool) && hasJsonSchemaType && fields?.strict) {
+    try {
+      // Convert JSON schema to Zod schema for validation
+      jsonSchemaToZod(tool.schema as Record<string, unknown>);
+      // If validation succeeds, maintain strict mode
+      return _convertToOpenAITool(tool, fields);
+    } catch (error) {
+      console.warn(
+        `Failed to convert JSON schema to Zod for tool "${tool.name}": ${error}. Falling back to non-strict mode.`
+      );
+      return _convertToOpenAITool(tool, { ...fields, strict: false });
+    }
+  }
+
   return _convertToOpenAITool(tool, fields);
 }
 
@@ -3272,17 +3302,6 @@ export class ChatOpenAI<
   }
 }
 
-function isZodSchema<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  RunOutput extends Record<string, any> = Record<string, any>
->(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: z.ZodType<RunOutput> | Record<string, any>
-): input is z.ZodType<RunOutput> {
-  // Check for a characteristic method of Zod schemas
-  return typeof (input as z.ZodType<RunOutput>)?.parse === "function";
-}
-
 function isStructuredOutputMethodParams(
   x: unknown
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3293,4 +3312,118 @@ function isStructuredOutputMethodParams(
     typeof (x as StructuredOutputMethodParams<Record<string, any>>).schema ===
       "object"
   );
+}
+
+export function jsonSchemaToZod(obj: Record<string, unknown>): z.ZodTypeAny {
+  // Handle array type at root level
+  if (obj?.type === "array" && obj.items) {
+    return z.array(jsonSchemaToZod(obj.items as Record<string, unknown>));
+  }
+
+  // Handle string type at root level with enum
+  if (obj?.type === "string" && obj.enum && Array.isArray(obj.enum)) {
+    const enumValues = obj.enum as string[];
+    if (enumValues.length === 0) {
+      throw new Error("String enum cannot be empty");
+    }
+    return z.enum(enumValues as [string, ...string[]]);
+  }
+
+  // Handle string type at root level
+  if (obj?.type === "string") {
+    let zodType = z.string();
+    if (obj?.pattern) {
+      zodType = zodType.regex(
+        new RegExp(obj.pattern as string),
+        "Invalid pattern"
+      );
+    }
+    return zodType;
+  }
+
+  // Handle number type at root level
+  if (obj?.type === "number" || obj?.type === "integer") {
+    return z.number();
+  }
+
+  // Handle boolean type at root level
+  if (obj?.type === "boolean") {
+    return z.boolean();
+  }
+
+  if (obj?.properties && obj.type === "object") {
+    const shape: Record<string, unknown> = {};
+
+    Object.keys(obj.properties).forEach((key) => {
+      if (obj.properties) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const prop = (obj.properties as Record<string, unknown>)[key] as any;
+
+        let zodType;
+        if (prop.type === "string") {
+          zodType = z.string();
+          if (prop?.pattern) {
+            // Convert string pattern to RegExp for Zod
+            zodType = zodType.regex(
+              new RegExp(prop.pattern),
+              "Invalid pattern"
+            );
+          }
+          if (prop?.enum && Array.isArray(prop.enum)) {
+            const enumValues = prop.enum as string[];
+            if (enumValues.length === 0) {
+              throw new Error(
+                `String enum for property "${key}" cannot be empty`
+              );
+            }
+            zodType = z.enum(enumValues as [string, ...string[]]);
+          }
+        } else if (
+          prop.type === "number" ||
+          prop.type === "integer" ||
+          prop.type === "float"
+        ) {
+          zodType = z.number();
+          if (typeof prop?.minimum === "number") {
+            zodType = zodType.min(prop.minimum, {
+              message: `${key} must be at least ${prop.minimum}`,
+            });
+          }
+          if (prop?.maximum)
+            zodType = zodType.lte(prop.maximum, {
+              message: `${key} must be maximum of ${prop.maximum}`,
+            });
+        } else if (prop.type === "boolean") {
+          zodType = z.boolean();
+        } else if (prop.type === "array") {
+          if (!prop.items) {
+            throw new Error(
+              `Array property "${key}" must have items definition`
+            );
+          }
+          zodType = z.array(jsonSchemaToZod(prop.items));
+        } else if (prop.type === "object") {
+          zodType = jsonSchemaToZod(prop);
+        } else if (prop.type === undefined) {
+          throw new Error(`Property "${key}" is missing type definition`);
+        } else {
+          throw new Error(`Unsupported type: ${prop.type}`);
+        }
+
+        if (prop.description) {
+          zodType = zodType.describe(prop.description);
+        }
+
+        // @ts-expect-error - TODO: fix this
+        if (!obj.required?.includes(key)) {
+          zodType = zodType.optional();
+        }
+
+        shape[key] = zodType;
+      }
+    });
+
+    return z.object(shape as z.ZodRawShape);
+  }
+  throw new Error("Unsupported root schema type");
 }
