@@ -73,6 +73,17 @@ interface ZhipuAIError {
   error: BaseResponse;
 }
 
+// https://open.bigmodel.cn/dev/api/normal-model/glm-4
+export type ZhipuAIModelId =
+  | 'glm-4'
+  | 'glm-4-plus'
+  | 'glm-4-0520'
+  | 'glm-4-air'
+  | 'glm-4-airx'
+  | 'glm-4-long'
+  | 'glm-4-flash'
+  | (string & NonNullable<unknown>);
+
 /**
  * Interface representing a response from a chat completion.
  */
@@ -80,7 +91,7 @@ interface ChatCompletionResponse extends ZhipuAIError {
   choices: ResponseChoice[];
   created: number;
   id: string;
-  model: string;
+  model: ZhipuAIModelId;
   request_id: string;
   usage: {
     completion_tokens: number;
