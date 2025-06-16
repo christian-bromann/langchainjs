@@ -1,6 +1,5 @@
 import { glob } from "glob";
 import fs from "node:fs/promises";
-import axios from "axios";
 
 const DEFAULT_WHITELIST = [
   "openai.com",
@@ -19,7 +18,7 @@ type CheckBrokenLinksOptions = {
 };
 
 const batchArray = <T>(array: T[], batchSize: number): T[][] => {
-  const batches = [];
+  const batches: T[][] = [];
   for (let i = 0; i < array.length; i += batchSize) {
     batches.push(array.slice(i, i + batchSize));
   }
@@ -76,13 +75,9 @@ export const checkUrl = async (
   }
 
   try {
-    const response = await axios.get(url, {
-      // Allow up to 5 redirects
-      maxRedirects: 5,
-      // Allow status codes in the 200 and 300 range
-      validateStatus: (status) => status >= 200 && status < 400,
-      // Set a timeout so the request doesn't hang
-      timeout,
+    const response = await fetch(url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(timeout),
     });
 
     if (response.status >= 200 && response.status < 400) {
@@ -161,18 +156,42 @@ export async function checkBrokenLinks(
   const allMdxFiles = await glob(`${mdxDirPath}/**/*.mdx`);
   const fileCount = allMdxFiles.length;
   let linksChecked = 0;
+  let filesProcessed = 0;
 
   const batchSize = 10;
   const batches = batchArray(allMdxFiles, batchSize);
 
   const failedUrls: string[] = [];
-
   const results: string[] = [];
 
+  // Helper function to create progress bar
+  const createProgressBar = (current: number, total: number, width: number = 30): string => {
+    const percentage = Math.round((current / total) * 100);
+    const filled = Math.round((percentage / 100) * width);
+    const empty = width - filled;
+    return `[${'█'.repeat(filled)}${'░'.repeat(empty)}] ${percentage}%`;
+  };
+
+  // Helper function to update status
+  const updateStatus = () => {
+    const progressBar = createProgressBar(filesProcessed, fileCount);
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    const rate = filesProcessed > 0 ? (filesProcessed / ((Date.now() - startTime) / 1000)).toFixed(1) : '0';
+    
+    // Clear line and write new content
+    process.stdout.write(`\r\x1b[K🔍 ${progressBar} (${filesProcessed}/${fileCount} files, ${linksChecked} links, ${elapsed}s, ${rate} files/s)`);
+  };
+
+  // Initial status
+  updateStatus();
+
   for await (const batch of batches) {
-    const batchLinksChecked = batch.map((filePath) =>
-      checkLinksInFile(filePath, options)
-    );
+    const batchLinksChecked = batch.map(async (filePath) => {
+      const result = await checkLinksInFile(filePath, options);
+      filesProcessed++;
+      updateStatus();
+      return result;
+    });
 
     const batchResults = await Promise.all(batchLinksChecked);
     const batchLinksCount = batchResults.reduce<number>((acc, result) => {
@@ -192,19 +211,32 @@ export async function checkBrokenLinks(
     }, 0);
 
     linksChecked += batchLinksCount;
+    updateStatus();
   }
 
-  if (options?.retryFailed && failedUrls.length) {
-    console.log(`Retrying ${failedUrls.length} failed urls...`);
+  // Clear the progress line and move to next line
+  process.stdout.write('\r\x1b[K');
 
+  if (options?.retryFailed && failedUrls.length) {
     const uniqueFailedUrls = [...new Set(failedUrls)];
+    console.log(`🔄 Retrying ${uniqueFailedUrls.length} failed URLs...`);
+
     const stillFailed: string[] = [];
+    let retryIndex = 0;
+    
     for await (const url of uniqueFailedUrls) {
+      retryIndex++;
+      const progressBar = createProgressBar(retryIndex, uniqueFailedUrls.length, 20);
+      process.stdout.write(`\r\x1b[K🔄 ${progressBar} Retrying: ${url.slice(0, 60)}...`);
+      
       const isOk = await checkUrl(url, options);
       if (!isOk) {
         stillFailed.push(url);
       }
     }
+
+    // Clear retry progress line
+    process.stdout.write('\r\x1b[K');
 
     if (stillFailed.length > 0) {
       results.push(
@@ -212,18 +244,21 @@ export async function checkBrokenLinks(
           stillFailed.length
         } broken links after retrying:\nLinks:\n - ${stillFailed.join("\n - ")}`
       );
+    } else {
+      console.log(`✅ All ${uniqueFailedUrls.length} failed URLs passed on retry!`);
     }
   }
 
   const endTime = Date.now();
   const totalTimeInSeconds = (endTime - startTime) / 1000;
-  console.log(
-    `Checked ${linksChecked} links inside ${fileCount} files. Took ${totalTimeInSeconds} seconds.`
-  );
+  
+  // Final summary
+  console.log(`✅ Completed! Checked ${linksChecked} links in ${fileCount} files (${totalTimeInSeconds.toFixed(1)}s)`);
 
   if (results.length) {
+    console.log(`\n❌ Found broken links:`);
     const errorMsg = results.join("\n\n");
     throw new Error(errorMsg);
   }
-  console.log("No broken links found! 🎉🎉🎉");
-}
+  console.log("🎉 No broken links found!");
+} 

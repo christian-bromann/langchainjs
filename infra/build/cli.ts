@@ -26,6 +26,7 @@ const cliConfig = {
         exclude: {
             type: 'string' as const,
             short: 'e',
+            default: [],
             multiple: true,
             description: 'Exclude packages from the build (can be specified multiple times)'
         },

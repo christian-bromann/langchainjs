@@ -22,6 +22,7 @@
     "build": "turbo build --filter=\"!test-exports-*\"",
     "build:new": "yarn workspace @langchain/infra-build build",
     "turbo:command": "turbo",
+    "checkBrokenLinks": "yarn workspace @langchain/infra-check-broken-links start",
     "clean": "turbo clean",
     "format": "turbo format --concurrency=50",
     "format:check": "turbo format:check --concurrency=50",

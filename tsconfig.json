@@ -24,6 +24,7 @@
     "langchain/src/**/*",
     "langchain-core/src/**/*",
     "libs/*/src/**/*",
+    "infra/*/src/**/*",
   ],
   "exclude": [
     "node_modules",

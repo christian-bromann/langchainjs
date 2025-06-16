@@ -1,0 +1,19 @@
+{
+  "name": "@langchain/infra-check-broken-links",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "tsx cli.ts --cwd $PWD"
+  },
+  "dependencies": {
+    "glob": "^11.0.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
