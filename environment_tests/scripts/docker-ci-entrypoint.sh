@@ -33,16 +33,14 @@ cp -r ../langchain-ollama/!(node_modules) ./libs/langchain-ollama
 cp -r ../langchain-google-gauth/!(node_modules) ./libs/langchain-google-gauth
 cp -r ../langchain/!(node_modules) ./libs/langchain
 
-# copy cache
-mkdir -p ./.yarn
-cp -r ../root/.yarn/!(berry|cache) ./.yarn
-cp ../root/yarn.lock ../root/.yarnrc.yml .
+# copy pnpm configs
+cp ../root/pnpm-lock.yaml ../root/.npmrc ../root/pnpm-workspace.yaml .
 
-yarn plugin import workspace-tools
-yarn workspaces focus --production
+# Install dependencies
+pnpm install --frozen-lockfile --prod
 
 # Check the build command completes successfully
-yarn build
+pnpm build
 
 # Check the test command completes successfully
-yarn test
+pnpm test

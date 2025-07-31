@@ -28,8 +28,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
       - name: Install dependencies
-        run: yarn install --immutable --mode=skip-build
+        run: pnpm install --frozen-lockfile --mode=skip-build
       - name: Check formatting
-        run: yarn run format:check
+        run: pnpm run format:check

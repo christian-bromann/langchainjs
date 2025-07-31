@@ -36,7 +36,7 @@ You can do so by adding appropriate fields to your project's `package.json` like
 }
 ```
 
-The field you need depends on the package manager you're using, but we recommend adding a field for the common `yarn`, `npm`, and `pnpm` to maximize compatibility.
+The field you need depends on the package manager you're using, but we recommend adding a field for the common `pnpm install`, `npm`, and `pnpm` to maximize compatibility.
 
 ## Tool usage
 

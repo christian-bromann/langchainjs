@@ -8,4 +8,4 @@ experimental.d.ts
 experimental.d.cts
 node_modules
 dist
-.yarn
+.pnpm

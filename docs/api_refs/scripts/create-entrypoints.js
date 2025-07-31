@@ -56,7 +56,7 @@ const BLACKLISTED_WORKSPACES = [
  * @returns {Array<string>} An array of paths to all workspaces in the monorepo.
  */
 function getYarnWorkspaces() {
-  const stdout = execSync("yarn workspaces list --json");
+  const stdout = execSync("pnpm workspaces list --json");
   const workspaces = JSON.parse(
     `[${stdout
       .toString()

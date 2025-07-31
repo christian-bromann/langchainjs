@@ -84,11 +84,11 @@ jobs:
   #       uses: actions/setup-node@v3
   #       with:
   #         node-version: ${{ env.NODE_VERSION }}
-  #         cache: "yarn"
+  #         cache: "pnpm"
   #     - name: Install dependencies
-  #       run: yarn install --immutable
+  #       run: pnpm install --frozen-lockfile
   #     - name: Build `@langchain/standard-tests`
-  #       run: yarn build @langchain/standard-tests
+  #       run: pnpm build @langchain/standard-tests
   #     - name: Test `@langchain/community` with latest deps
   #       run: docker compose -f dependency_range_tests/docker-compose.yml run community-latest-deps
 
@@ -102,11 +102,11 @@ jobs:
   #       uses: actions/setup-node@v3
   #       with:
   #         node-version: ${{ env.NODE_VERSION }}
-  #         cache: "yarn"
+  #         cache: "pnpm"
   #     - name: Install dependencies
-  #       run: yarn install --immutable
+  #       run: pnpm install --frozen-lockfile
   #     - name: Build `@langchain/standard-tests`
-  #       run: yarn build @langchain/standard-tests
+  #       run: pnpm build @langchain/standard-tests
   #     - name: Test `@langchain/community` with lowest deps
   #       run: docker compose -f dependency_range_tests/docker-compose.yml run community-lowest-deps
 
@@ -118,11 +118,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test npm install on `@langchain/community`
         run: docker compose -f dependency_range_tests/docker-compose.yml run community-npm-install
 
@@ -137,11 +137,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/openai` with latest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run openai-latest-deps
 
@@ -155,11 +155,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/openai` with lowest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run openai-lowest-deps
 
@@ -174,11 +174,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/anthropic` with latest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run anthropic-latest-deps
 
@@ -192,11 +192,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/anthropic` with lowest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run anthropic-lowest-deps
 
@@ -211,11 +211,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/google-vertexai` with latest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run google-vertexai-latest-deps
 
@@ -229,11 +229,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/google-vertexai` with lowest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run google-vertexai-lowest-deps
 
@@ -248,11 +248,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/cohere` with latest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run cohere-latest-deps
 
@@ -266,10 +266,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
       - name: Build `@langchain/standard-tests`
-        run: yarn build @langchain/standard-tests
+        run: pnpm build @langchain/standard-tests
       - name: Test `@langchain/cohere` with lowest deps
         run: docker compose -f dependency_range_tests/docker-compose.yml run cohere-lowest-deps

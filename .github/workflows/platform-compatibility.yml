@@ -34,10 +34,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
       - name: Install dependencies
-        run: cd ./langchain-core && yarn workspaces focus
+        run: cd ./langchain-core && pnpm install --frozen-lockfile
       - name: Build @langchain/scripts
-        run: cd ./libs/langchain-scripts && yarn build:internal
+        run: cd ./libs/langchain-scripts && pnpm build:internal
       - name: Build `@langchain/core`
-        run: cd ./langchain-core && yarn build:internal
+        run: cd ./langchain-core && pnpm build:internal

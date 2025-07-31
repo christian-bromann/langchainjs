@@ -26,14 +26,14 @@ node "update_resolutions_latest.js"
 
 # Navigate back to monorepo root and install dependencies
 cd "$monorepo_dir"
-touch yarn.lock
+touch pnpm-lock.yaml
 cat ./package.json
-yarn
+pnpm install
 
 # Navigate into `@langchain/google-vertexai` to build and run tests
 # We need to run inside the google-vertexai directory so turbo repo does
 # not try to build the package/its workspace dependencies.
 cd "$monorepo_vertexai_dir"
 
-yarn add @langchain/core @langchain/google-gauth
-yarn test
+pnpm add @langchain/core @langchain/google-gauth
+pnpm test

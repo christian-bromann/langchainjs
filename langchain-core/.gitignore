@@ -248,4 +248,4 @@ vectorstores.d.ts
 vectorstores.d.cts
 node_modules
 dist
-.yarn
+.pnpm
