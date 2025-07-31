@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --mode=skip-build
       - name: Run integration tests for ${{ matrix.package }}
-        run: yarn turbo test:integration --filter=@langchain/${{ matrix.package }}
+        run: pnpm turbo test:integration --filter=@langchain/${{ matrix.package }}
         env:
           ANTHROPIC_API_KEY: ${{ matrix.package == 'anthropic' && secrets.ANTHROPIC_API_KEY || '' }}
           COHERE_API_KEY: ${{ matrix.package == 'cohere' && secrets.COHERE_API_KEY || '' }}

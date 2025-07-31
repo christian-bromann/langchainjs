@@ -106,4 +106,4 @@ jobs:
       - name: Build '@langchain/${{ matrix.package }}' package
         run: pnpm build @langchain/${{ matrix.package }}
       - name: Test '@langchain/${{ matrix.package }}' package
-        run: yarn test:unit:ci --filter=@langchain/${{ matrix.package }}
+        run: pnpm test:unit:ci --filter=@langchain/${{ matrix.package }}
