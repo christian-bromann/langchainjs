@@ -14,6 +14,13 @@ export interface WorkspacePackage {
   path: string;
 }
 
+interface PackageList {
+  name: string;
+  version?: string;
+  path: string;
+  private: boolean;
+}
+
 /**
  * Find all packages in the workspace that match the package query and are not excluded.
  *
@@ -26,25 +33,24 @@ export async function findWorkspacePackages(
   rootDir: string,
   opts: CompilePackageOptions
 ) {
-  const result = await execAsync("yarn workspaces list --json");
+  const result = await execAsync("pnpm list -r --json --depth=-1");
+  const packages = JSON.parse(result.stdout) as PackageList[];
   const workspaces = (
     await Promise.all(
-      result.stdout.split("\n").map(async (line) => {
+      packages.map(async (workspace) => {
         try {
-          const workspace = JSON.parse(line);
-          if (workspace.location === ".") {
+          // Skip the root workspace
+          if (workspace.path === rootDir) {
             return null;
           }
-          const pkg = await import(
-            resolve(rootDir, workspace.location, "package.json")
-          );
+          const pkg = await import(resolve(workspace.path, "package.json"));
 
           /**
            * skip package if it matches any exclude pattern
            */
           if (opts.exclude && opts.exclude.length > 0) {
             const isExcluded = opts.exclude.some(
-              (excludePattern) => pkg.name === excludePattern
+              (excludePattern) => workspace.name === excludePattern
             );
             if (isExcluded) {
               return null;
@@ -57,11 +63,11 @@ export async function findWorkspacePackages(
           if (
             !opts.packageQuery ||
             opts.packageQuery.length === 0 ||
-            opts.packageQuery.includes(pkg.name)
+            opts.packageQuery.includes(workspace.name)
           ) {
             return {
               pkg,
-              path: resolve(rootDir, workspace.location),
+              path: workspace.path,
             };
           }
         } catch {

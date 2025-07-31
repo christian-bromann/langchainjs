@@ -16,4 +16,4 @@ llms.d.ts
 llms.d.cts
 node_modules
 dist
-.yarn
+.pnpm

@@ -6,15 +6,12 @@ lib/
 .eslintcache
 .env
 .env.local
-yarn-error.log
 docs/_dist/
 
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# pnpm
+node_modules
+.pnpm-debug.log*
+.pnpm-store
 
 langchain/docs/
 

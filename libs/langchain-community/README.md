@@ -5,7 +5,7 @@
 ## Quick Install
 
 ```bash
-$ yarn add @langchain/community
+$ pnpm add @langchain/community
 ```
 
 This package, along with the main LangChain package, depends on [`@langchain/core`](https://npmjs.com/package/@langchain/core/).
@@ -34,7 +34,7 @@ You can do so by adding appropriate field to your project's `package.json` like 
 }
 ```
 
-The field you need depends on the package manager you're using, but we recommend adding a field for the common `yarn`, `npm`, and `pnpm` to maximize compatibility.
+The field you need depends on the package manager you're using, but we recommend adding a field for the common `pnpm install`, `npm`, and `pnpm` to maximize compatibility.
 
 ## 🤔 What is this?
 

@@ -26,13 +26,13 @@ node "update_resolutions_latest.js"
 
 # Navigate back to monorepo root and install dependencies
 cd "$monorepo_dir"
-touch yarn.lock
-yarn
+touch pnpm-lock.yaml
+pnpm install
 
 # Navigate into `@langchain/cohere` to build and run tests
 # We need to run inside the cohere directory so turbo repo does
 # not try to build the package/its workspace dependencies.
 cd "$monorepo_cohere_dir"
 
-yarn add @langchain/core
-yarn test
+pnpm add @langchain/core
+pnpm test

@@ -8,7 +8,7 @@ test("Test GithubRepoLoader", async () => {
   );
   const documents = await loader.load();
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(1);
   expect(
@@ -25,12 +25,12 @@ test("Test ignoreFiles with GithubRepoLoader", async () => {
       branch: "main",
       recursive: false,
       unknown: "warn",
-      ignoreFiles: ["yarn.lock", "README.md"],
+      ignoreFiles: ["pnpm-lock.yaml", "README.md"],
     }
   );
   const documents = await loader.load();
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(0);
   expect(
@@ -47,12 +47,12 @@ test("Test ignorePaths with GithubRepoLoader", async () => {
       branch: "main",
       recursive: false,
       unknown: "warn",
-      ignorePaths: ["yarn.lock", "*.md"],
+      ignorePaths: ["pnpm-lock.yaml", "*.md"],
     }
   );
   const documents = await loader.load();
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(0);
   expect(
@@ -78,7 +78,7 @@ test("Test streaming documents from GithubRepoLoader", async () => {
   }
 
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(1);
   expect(
@@ -94,7 +94,7 @@ test("Test ignorePaths streaming with GithubRepoLoader", async () => {
       branch: "main",
       recursive: false,
       unknown: "warn",
-      ignorePaths: ["yarn.lock", "*.md"],
+      ignorePaths: ["pnpm-lock.yaml", "*.md"],
     }
   );
 
@@ -104,7 +104,7 @@ test("Test ignorePaths streaming with GithubRepoLoader", async () => {
   }
 
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(0);
   expect(
@@ -120,7 +120,7 @@ test("Test ignoreFiles streaming with GithubRepoLoader", async () => {
       branch: "main",
       recursive: false,
       unknown: "warn",
-      ignoreFiles: ["yarn.lock", "README.md"],
+      ignoreFiles: ["pnpm-lock.yaml", "README.md"],
     }
   );
 
@@ -130,7 +130,7 @@ test("Test ignoreFiles streaming with GithubRepoLoader", async () => {
   }
 
   expect(
-    documents.filter((document) => document.metadata.source === "yarn.lock")
+    documents.filter((document) => document.metadata.source === "pnpm-lock.yaml")
       .length
   ).toBe(0);
   expect(

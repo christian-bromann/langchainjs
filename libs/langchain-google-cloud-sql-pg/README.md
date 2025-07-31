@@ -19,7 +19,7 @@ In order to use this package, you first need to go through the following steps:
 ### Installation
 
 ```bash
-$ yarn add @langchain/google-cloud-sql-pg
+$ pnpm add @langchain/google-cloud-sql-pg
 ```
 
 ## Example usage

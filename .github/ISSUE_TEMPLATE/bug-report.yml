@@ -99,17 +99,17 @@ body:
       description: |
         Please share your system info with us. 
 
-        "yarn info langchain" 
+        "pnpm info langchain" 
         platform (windows / linux / mac)
         Node version
-        yarn version
+        pnpm version
       placeholder: |
-        "yarn info langchain"
+        "pnpm info langchain"
         platform
         Node version
-        yarn version
+        pnpm version
 
         These will only surface LangChain.js packages, don't forget to include any other relevant
-        packages you're using (if you're not sure what's relevant, you can paste the entire output of `yarn info`).
+        packages you're using (if you're not sure what's relevant, you can paste the entire output of `pnpm info`).
     validations:
       required: true

@@ -46,14 +46,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
         # Running `test:unit:ci` from root will build first, however debugging
         # in CI is easier if we separate the build step from the test step.
       - name: Build LangChain
-        run: yarn build langchain
+        run: pnpm build langchain
       - name: Test
-        run: yarn run test:unit:ci --filter=langchain
+        run: pnpm run test:unit:ci --filter=langchain
         env:
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}

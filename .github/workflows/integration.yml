@@ -22,8 +22,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.14.0
       - name: Install dependencies
-        run: yarn install --immutable
-      - run: yarn run ci
-      - run: yarn workspace langchain run test:integration
+        run: pnpm install --frozen-lockfile
+      - run: pnpm run ci
+      - run: pnpm --filter langchain run test:integration

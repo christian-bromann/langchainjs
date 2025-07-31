@@ -25,12 +25,12 @@ yarn-error.log*
 # ESLint
 .eslintcache
 
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+.pnpm/*
+!.pnpm/patches
+!.pnpm/plugins
+!.pnpm/releases
+!.pnpm/sdks
+!.pnpm/versions
 
 /.quarto/
 # AUTO_GENERATED_DOCS

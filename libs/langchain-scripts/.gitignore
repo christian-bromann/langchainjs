@@ -16,6 +16,6 @@ check_broken_links.d.ts
 check_broken_links.d.cts
 node_modules
 dist
-.yarn
+.pnpm
 !bin/build.js
 dist_build

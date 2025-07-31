@@ -20,4 +20,4 @@ experimental/utils/media_core.d.ts
 experimental/utils/media_core.d.cts
 node_modules
 dist
-.yarn
+.pnpm

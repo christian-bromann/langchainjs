@@ -1,0 +1,7 @@
+packages:
+  - "langchain"
+  - "langchain-core"
+  - "libs/*"
+  - "examples"
+  - "docs/*"
+  - "internal/*"
