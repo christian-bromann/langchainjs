@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable --mode=skip-build
       - name: Build `@langchain/openai`
-        run: yarn build @langchain/openai
+        run: yarn build --filter=@langchain/openai
       - name: Run integration tests for ChatOpenAI
         run: yarn workspace @langchain/openai test:single src/tests/chat_models_structured_output.int.test.ts src/tests/chat_models_responses.int.test.ts src/tests/chat_models-extended.int.test.ts src/tests/chat_models-vision.int.test.ts src/tests/chat_models.int.test.ts src/tests/chat_models.standard.int.test.ts src/tests/chat_models_responses.standard.int.test.ts
         env:
@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable --mode=skip-build
       - name: Build `@langchain/openai`
-        run: yarn build @langchain/openai
+        run: yarn build --filter=@langchain/openai
       - name: Run integration tests for `@langchain/openai` AzureChatOpenAI
         run: yarn workspace @langchain/openai test:single src/tests/azure/chat_models.standard.int.test.ts src/tests/azure/chat_models.int.test.ts
         env:
@@ -97,7 +97,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable --mode=skip-build
       - name: Build `@langchain/community`
-        run: yarn build @langchain/community
+        run: yarn build --filter=@langchain/community
       - name: Run standard tests (integration) for `@langchain/community` BedrockChat
         run: yarn workspace @langchain/community test:single src/chat_models/tests/chatbedrock.standard.int.test.ts
         env:
@@ -117,7 +117,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable --mode=skip-build
       - name: Build `@langchain/community`
-        run: yarn build @langchain/community
+        run: yarn build --filter=@langchain/community
       - name: Run standard tests (integration) for `@langchain/community` ChatFireworks
         run: yarn workspace @langchain/community test:single src/chat_models/tests/chatfireworks.standard.int.test.ts
         env:

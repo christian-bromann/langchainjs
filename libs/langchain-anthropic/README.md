@@ -94,7 +94,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/anthropic
+yarn build --filter=@langchain/anthropic
 ```
 
 ### Run tests

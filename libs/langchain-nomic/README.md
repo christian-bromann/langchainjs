@@ -62,7 +62,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/nomic
+yarn build --filter=@langchain/nomic
 ```
 
 ### Run tests

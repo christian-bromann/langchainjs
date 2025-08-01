@@ -65,7 +65,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/mixedbread-ai
+yarn build --filter=@langchain/mixedbread-ai
 ```
 
 ### Run tests

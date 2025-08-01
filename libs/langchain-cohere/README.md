@@ -102,7 +102,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/cohere
+yarn build --filter=@langchain/cohere
 ```
 
 ### Run tests

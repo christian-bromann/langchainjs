@@ -138,7 +138,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/google-genai
+yarn build --filter=@langchain/google-genai
 ```
 
 ### Run tests

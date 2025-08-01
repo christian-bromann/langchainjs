@@ -70,7 +70,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/weaviate
+yarn build --filter=@langchain/weaviate
 ```
 
 ### Run tests

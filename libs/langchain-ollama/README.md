@@ -41,7 +41,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/ollama
+yarn build --filter=@langchain/ollama
 ```
 
 ### Run tests

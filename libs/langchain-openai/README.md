@@ -102,7 +102,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/openai
+yarn build --filter=@langchain/openai
 ```
 
 ### Run tests

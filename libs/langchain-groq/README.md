@@ -51,7 +51,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/groq
+yarn build --filter=@langchain/groq
 ```
 
 ### Run tests

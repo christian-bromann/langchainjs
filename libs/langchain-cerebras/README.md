@@ -50,7 +50,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/cerebras
+yarn build --filter=@langchain/cerebras
 ```
 
 ### Run tests

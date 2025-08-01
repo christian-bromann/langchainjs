@@ -55,7 +55,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/mongodb
+yarn build --filter=@langchain/mongodb
 ```
 
 ### Run tests

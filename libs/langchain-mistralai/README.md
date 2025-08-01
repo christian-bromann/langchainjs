@@ -102,7 +102,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/mistralai
+yarn build --filter=@langchain/mistralai
 ```
 
 ### Run tests

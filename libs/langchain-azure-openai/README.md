@@ -151,7 +151,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/azure-openai
+yarn build --filter=@langchain/azure-openai
 ```
 
 ### Run tests

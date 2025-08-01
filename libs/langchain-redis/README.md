@@ -27,7 +27,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/redis
+yarn build --filter=@langchain/redis
 ```
 
 ### Run tests

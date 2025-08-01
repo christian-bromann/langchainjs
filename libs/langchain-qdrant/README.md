@@ -27,7 +27,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/qdrant
+yarn build --filter=@langchain/qdrant
 ```
 
 ### Run tests

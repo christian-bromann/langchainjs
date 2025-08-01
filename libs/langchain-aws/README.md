@@ -106,7 +106,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/aws
+yarn build --filter=@langchain/aws
 ```
 
 ### Run tests

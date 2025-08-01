@@ -100,7 +100,7 @@ yarn build
 Or from the repo root:
 
 ```bash
-yarn build @langchain/<ADD_PACKAGE_NAME_HERE>
+yarn build --filter=@langchain/<ADD_PACKAGE_NAME_HERE>
 ```
 
 ### Run tests
