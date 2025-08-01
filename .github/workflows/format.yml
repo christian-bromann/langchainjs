@@ -4,7 +4,7 @@ name: Format
 
 on:
   pull_request:
-    paths_ignore:
+    paths-ignore:
       - ".github/**"
   workflow_dispatch: # Allows triggering the workflow manually in GitHub UI
 
