@@ -18,7 +18,7 @@
   },
   "packageManager": "yarn@3.5.1",
   "scripts": {
-    "build": "turbo build --filter=\"!test-exports-*\" --verbose",
+    "build": "turbo build --filter=\"!test-exports-*\"",
     "turbo:command": "turbo",
     "clean": "turbo clean",
     "format": "turbo format --concurrency=50",

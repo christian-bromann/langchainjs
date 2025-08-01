@@ -42,7 +42,15 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: |
+          yarn build \
+            --filter=langchain \
+            --filter=@langchain/core \
+            --filter=@langchain/anthropic \
+            --filter=@langchain/community \
+            --filter=@langchain/openai \
+            --filter=@langchain/ollama \
+            --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test esbuild exports
@@ -61,7 +69,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test esm exports
@@ -80,7 +95,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test cjs exports
@@ -99,7 +121,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test cf exports
@@ -118,7 +147,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test vercel exports
@@ -137,7 +173,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test vite exports
@@ -156,7 +199,14 @@ jobs:
         run: yarn install --immutable
 
       - name: Build dependencies
-        run: yarn build langchain @langchain/core @langchain/anthropic @langchain/community @langchain/openai @langchain/ollama @langchain/google-gauth
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
+          --filter=@langchain/ollama \
+          --filter=@langchain/google-gauth
         shell: bash
 
       - name: Test compiling exports with tsc
@@ -173,8 +223,14 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: yarn install --immutable
-      - name: Build
-        run: yarn workspace langchain build
+
+      - name: Build dependencies
+        run: yarn build \
+          --filter=langchain \
+          --filter=@langchain/core \
+          --filter=@langchain/anthropic \
+          --filter=@langchain/community \
+          --filter=@langchain/openai \
         shell: bash
 
       - name: Test bun exports
