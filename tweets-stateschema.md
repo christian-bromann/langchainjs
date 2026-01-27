@@ -230,6 +230,28 @@ For complex multi-step graphs, this changes everything.
 
 ---
 
+# Animation
+
+A Remotion animation is included in `/animations` to accompany these tweets.
+
+## Recommended: TwitterShort composition (~13 seconds)
+
+```bash
+cd animations
+npm install
+npx remotion render src/index.ts TwitterShort out/twitter-short.mp4
+```
+
+The animation shows:
+1. StateSchema branding intro
+2. Before/After code transformation
+3. Schema library switching (Zod → Valibot → ArkType)
+4. Install CTA
+
+## Attach to Tweet 1 or 2 for maximum impact.
+
+---
+
 # Writing Notes
 
 ## Applied Best Practices:
