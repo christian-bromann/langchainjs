@@ -8,5 +8,7 @@ export * from "./embeddings.js";
 export * from "./types.js";
 export * from "./utils/openai.js";
 export * from "./utils/azure.js";
+export { OpenAIWebSocketManager } from "./utils/websocket.js";
+export type { OpenAIWebSocketManagerOptions, WebSocketRequest } from "./utils/websocket.js";
 export * from "./tools/index.js";
 export { convertPromptToOpenAI } from "./utils/prompts.js";

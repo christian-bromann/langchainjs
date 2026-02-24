@@ -242,6 +242,18 @@ export interface OpenAIChatInput extends OpenAIBaseInput {
    * @default false
    */
   zdrEnabled?: boolean;
+
+  /**
+   * Whether to use WebSocket transport for the Responses API. When enabled, a persistent
+   * WebSocket connection is used instead of HTTP requests, which can reduce latency for
+   * multiple sequential requests.
+   *
+   * Requires `useResponsesApi` to be `true` (or will automatically enable it).
+   *
+   * @default false
+   * @see https://developers.openai.com/api/docs/guides/websocket-mode
+   */
+  useWebSocket?: boolean;
 }
 
 export declare interface AzureOpenAIInput {
