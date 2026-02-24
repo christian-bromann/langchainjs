@@ -94,6 +94,10 @@ import {
   formatFunctionDefinitions,
 } from "./utils/openai-format-fndef.js";
 import { _convertToOpenAITool } from "./utils/tools.js";
+import {
+  OpenAIWebSocketManager,
+  type WebSocketRequest,
+} from "./utils/websocket.js";
 
 export type { OpenAICallOptions, OpenAIChatInput };
 
@@ -1163,6 +1167,18 @@ export interface ChatOpenAIFields
    * only when required in order to fulfill the request.
    */
   useResponsesApi?: boolean;
+
+  /**
+   * Whether to use WebSocket transport for the Responses API. When enabled, a persistent
+   * WebSocket connection is used instead of HTTP requests, which can reduce latency for
+   * multiple sequential requests.
+   *
+   * Requires `useResponsesApi` to be `true` (or will automatically enable it).
+   *
+   * @default false
+   * @see https://developers.openai.com/api/docs/guides/websocket-mode
+   */
+  useWebSocket?: boolean;
 }
 
 /**
@@ -1783,6 +1799,7 @@ export class ChatOpenAI<
       "metadata",
       "disableStreaming",
       "useResponsesApi",
+      "useWebSocket",
       "zdrEnabled",
       "reasoning",
     ];
@@ -1864,6 +1881,20 @@ export class ChatOpenAI<
   useResponsesApi = false;
 
   /**
+   * Whether to use WebSocket transport for the Responses API. When enabled, a persistent
+   * WebSocket connection is used instead of HTTP requests, which can reduce latency for
+   * multiple sequential requests.
+   *
+   * Requires `useResponsesApi` to be `true` (or will automatically enable it).
+   *
+   * @default false
+   * @see https://developers.openai.com/api/docs/guides/websocket-mode
+   */
+  useWebSocket = false;
+
+  protected wsManager: OpenAIWebSocketManager | null = null;
+
+  /**
    * Must be set to `true` in tenancies with Zero Data Retention. Setting to `true` will disable
    * output storage in the Responses API, but this DOES NOT enable Zero Data Retention in your
    * OpenAI organization or project. This must be configured directly with OpenAI.
@@ -1916,6 +1947,10 @@ export class ChatOpenAI<
         : undefined);
     this.maxTokens = fields?.maxCompletionTokens ?? fields?.maxTokens;
     this.useResponsesApi = fields?.useResponsesApi ?? this.useResponsesApi;
+    this.useWebSocket = fields?.useWebSocket ?? this.useWebSocket;
+    if (this.useWebSocket) {
+      this.useResponsesApi = true;
+    }
     this.disableStreaming = fields?.disableStreaming ?? this.disableStreaming;
 
     this.streaming = fields?.streaming ?? false;
@@ -2352,6 +2387,15 @@ export class ChatOpenAI<
     runManager?: CallbackManagerForLLMRun
   ): AsyncGenerator<ChatGenerationChunk> {
     if (this._useResponseApi(options)) {
+      if (this.useWebSocket) {
+        yield* this._streamResponseChunksWebSocket(
+          messages,
+          options,
+          runManager
+        );
+        return;
+      }
+
       const lastAIMessage = messages.filter((m) => isAIMessage(m)).pop();
       const lastAIMessageId = lastAIMessage?.response_metadata?.id;
       const streamIterable = await this.responseApiWithRetry(
@@ -2537,18 +2581,30 @@ export class ChatOpenAI<
       this.model,
       this.zdrEnabled
     );
-    const data = await this.responseApiWithRetry(
-      {
-        input,
-        ...invocationParams,
-        ...(lastAIMessageId &&
-        lastAIMessageId.startsWith("resp_") &&
-        !this.zdrEnabled
-          ? { previous_response_id: lastAIMessageId }
-          : {}),
-      },
-      { signal: options?.signal, ...options?.options }
-    );
+
+    const requestBody = {
+      input,
+      ...invocationParams,
+      ...(lastAIMessageId &&
+      lastAIMessageId.startsWith("resp_") &&
+      !this.zdrEnabled
+        ? { previous_response_id: lastAIMessageId }
+        : {}),
+    };
+
+    let data;
+    if (this.useWebSocket) {
+      const wsManager = this._getOrCreateWsManager();
+      data = await wsManager.invoke(
+        requestBody as unknown as WebSocketRequest,
+        options?.signal ?? undefined
+      );
+    } else {
+      data = await this.responseApiWithRetry(requestBody, {
+        signal: options?.signal,
+        ...options?.options,
+      });
+    }
 
     return {
       generations: [
@@ -2589,7 +2645,12 @@ export class ChatOpenAI<
       options?.reasoning?.summary != null ||
       this.reasoning?.summary != null;
 
-    return this.useResponsesApi || usesBuiltInTools || hasResponsesOnlyKwargs;
+    return (
+      this.useResponsesApi ||
+      this.useWebSocket ||
+      usesBuiltInTools ||
+      hasResponsesOnlyKwargs
+    );
   }
 
   /** @ignore */
@@ -3025,6 +3086,75 @@ export class ChatOpenAI<
       ...options,
     } as OpenAICoreRequestOptions;
     return requestOptions;
+  }
+
+  /**
+   * Get or lazily create the WebSocket manager for persistent connections to the
+   * Responses API.
+   */
+  protected _getOrCreateWsManager(): OpenAIWebSocketManager {
+    if (!this.wsManager) {
+      this._getClientOptions(undefined);
+      const baseURL = this.client
+        ? (this.clientConfig.baseURL ?? "https://api.openai.com/v1")
+        : "https://api.openai.com/v1";
+
+      this.wsManager = new OpenAIWebSocketManager({
+        apiKey: this.apiKey ?? "",
+        baseURL,
+        organization: this.organization,
+      });
+    }
+    return this.wsManager;
+  }
+
+  /**
+   * Stream response chunks via WebSocket transport.
+   */
+  protected async *_streamResponseChunksWebSocket(
+    messages: BaseMessage[],
+    options: this["ParsedCallOptions"],
+    _runManager?: CallbackManagerForLLMRun
+  ): AsyncGenerator<ChatGenerationChunk> {
+    const lastAIMessage = messages.filter((m) => isAIMessage(m)).pop();
+    const lastAIMessageId = lastAIMessage?.response_metadata?.id;
+
+    const request = {
+      ...this.invocationParams<"responses">(options, { streaming: true }),
+      input: _convertMessagesToOpenAIResponsesParams(
+        messages,
+        this.model,
+        this.zdrEnabled
+      ),
+      stream: true as const,
+      ...(lastAIMessageId &&
+      lastAIMessageId.startsWith("resp_") &&
+      !this.zdrEnabled
+        ? { previous_response_id: lastAIMessageId }
+        : {}),
+    };
+
+    const wsManager = this._getOrCreateWsManager();
+
+    for await (const data of wsManager.stream(
+      request,
+      options.signal ?? undefined
+    )) {
+      const chunk =
+        _convertOpenAIResponsesDeltaToBaseMessageChunk(data);
+      if (chunk == null) continue;
+      yield chunk;
+    }
+  }
+
+  /**
+   * Close the WebSocket connection if one exists.
+   */
+  closeWebSocket() {
+    if (this.wsManager) {
+      this.wsManager.close();
+      this.wsManager = null;
+    }
   }
 
   _llmType() {
