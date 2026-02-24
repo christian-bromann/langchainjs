@@ -44,7 +44,7 @@ describe("ChatOpenAI WebSocket mode", () => {
       useWebSocket: true,
     });
     const serialized = JSON.stringify(model);
-    expect(serialized).toContain("useWebSocket");
+    expect(serialized).toContain("use_web_socket");
   });
 
   it("_useResponseApi returns true when useWebSocket is set", () => {
@@ -74,7 +74,7 @@ describe("ChatOpenAI WebSocket mode", () => {
     const model = new ChatOpenAI({
       model: "gpt-4o",
       apiKey: "test-api-key",
-      organization: "test-org",
+      configuration: { organization: "test-org" },
       useWebSocket: true,
     });
     const manager = (model as any)._getOrCreateWsManager();
@@ -192,6 +192,6 @@ describe("ChatOpenAI WebSocket serialization", () => {
       useWebSocket: true,
     });
     const serialized = JSON.parse(JSON.stringify(model));
-    expect(serialized.kwargs).toHaveProperty("useWebSocket");
+    expect(serialized.kwargs).toHaveProperty("use_web_socket", true);
   });
 });

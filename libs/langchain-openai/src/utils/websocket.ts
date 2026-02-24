@@ -141,6 +141,7 @@ export class OpenAIWebSocketManager {
         eventQueue.push(event);
         resolveNext?.();
       } catch (e) {
+        // eslint-disable-next-line no-instanceof/no-instanceof
         error = e instanceof Error ? e : new Error(String(e));
         resolveNext?.();
       }
@@ -169,6 +170,11 @@ export class OpenAIWebSocketManager {
     ws.on("close", onClose);
     signal?.addEventListener("abort", onAbort);
 
+    const waitForNext = () =>
+      new Promise<void>((resolve) => {
+        resolveNext = resolve;
+      });
+
     try {
       ws.send(JSON.stringify(request));
 
@@ -192,9 +198,7 @@ export class OpenAIWebSocketManager {
             break;
           }
         } else if (!done) {
-          await new Promise<void>((resolve) => {
-            resolveNext = resolve;
-          });
+          await waitForNext();
           resolveNext = null;
         }
       }
